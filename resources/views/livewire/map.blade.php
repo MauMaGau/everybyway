@@ -1,5 +1,4 @@
 <div>
-    $wire.pings.length
     <div id="map"></div>
 </div>
 
@@ -21,8 +20,9 @@
     }).addTo(map);
 
     let pings = @js($pings->select(['lat', 'lon']));
-
+console.log(pings);
     pings.forEach((ping) => {
+        console.log(ping);
         L.marker([ping.lat, ping.lon]).addTo(map);
     });
 </script>
