@@ -14,4 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 class Ping extends Model
 {
     use HasFactory;
+
+    protected $hidden = [
+        'data',
+    ];
 }

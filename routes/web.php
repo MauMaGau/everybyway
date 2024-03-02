@@ -17,4 +17,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/map', \App\Livewire\Map::class);
+
 Route::resource('ping', \App\Http\Controllers\PingController::class);
