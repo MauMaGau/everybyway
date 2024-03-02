@@ -16,7 +16,7 @@ class PingController extends Controller
         $ping->save();
     }
 
-    public function create(Request $request)
+    public function index(Request $request)
     {
         $ping = new Ping();
         $ping->data = json_encode($request->query());
