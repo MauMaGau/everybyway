@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pings', function (Blueprint $table) {
-            $table->float('lat', 11, 2); // (+/- 90)
-            $table->float('lon', 11, 3); // (+/- 180)
+            $table->float('lat', 11, 11-2)->after('data'); // (+/- 90)
+            $table->float('lon', 11, 11-3)->after('lat'); // (+/- 180)
         });
     }
 
