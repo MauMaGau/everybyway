@@ -11,8 +11,8 @@ class PingController extends Controller
     public function store(Request $request)
     {
         $ping = new Ping();
-        $ping->data = json_encode($request->all());
-        Log::error(json_encode($request->all()));
+        $ping->data = json_encode($request->query());
+        Log::error(json_encode($request->input()));
         $ping->save();
     }
 }
