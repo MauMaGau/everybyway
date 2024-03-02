@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int userId
  * @property string data
+ * @property float lat
+ * @property float lon
  */
 class Ping extends Model
 {

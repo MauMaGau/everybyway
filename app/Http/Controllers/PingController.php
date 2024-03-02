@@ -12,15 +12,8 @@ class PingController extends Controller
     {
         $ping = new Ping();
         $ping->data = json_encode($request->query());
-        Log::error(json_encode($request->input()));
-        $ping->save();
-    }
-
-    public function index(Request $request)
-    {
-        $ping = new Ping();
-        $ping->data = json_encode($request->query());
-        Log::error(json_encode($request->input()));
+        $ping->lat = $request->get('lat');
+        $ping->lon = $request->get('lon');
         $ping->save();
     }
 }
