@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class PingController extends Controller
 {
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $ping = new Ping();
         $ping->data = json_encode($request->all());
