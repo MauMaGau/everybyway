@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ping', function (Blueprint $table) {
+        Schema::create('pings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
             $table->json('data');
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ping');
+        Schema::dropIfExists('pings');
     }
 };
