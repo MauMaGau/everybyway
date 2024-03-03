@@ -8,6 +8,7 @@ use App\Models\Ping;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class PingController extends Controller
 {
@@ -24,13 +25,19 @@ class PingController extends Controller
             $newPing->created_at = Carbon::createFromTimestamp($request->get('timestamp'))->format('Y-m-d H:i:s');
         }
 
-        if ($lastPing && GeoHelper::distance(
-            new Geo($lastPing->lat, $lastPing->lon),
+        $distance = GeoHelper::distance(
+            $lastPing->geo,
             new Geo(floatval($newPing->lat), floatval($newPing->lon))
-            ) < env('MIN_TRAVEL')) {
+        );
+
+        if ($lastPing && $distance < env('MIN_TRAVEL')) {
             return Response::HTTP_ALREADY_REPORTED;
         }
 
+        Log::error(json_encode([$lastPing, $newPing, $distance]));
+
         $newPing->save();
+
+        return Response::HTTP_ACCEPTED;
     }
 }
