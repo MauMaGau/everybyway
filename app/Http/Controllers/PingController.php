@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTOs\Geo;
 use App\Helpers\GeoHelper;
 use App\Models\Ping;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -19,7 +20,9 @@ class PingController extends Controller
         $newPing->data = json_encode($request->query());
         $newPing->lat = $request->get('lat');
         $newPing->lon = $request->get('lon');
-//        $newPing->created_at = $request->get('timestamp');
+        if ($request->has('timestamp')) {
+            $newPing->created_at = Carbon::createFromTimestamp($request->get('timestamp'))->format('Y-m-d H:i:s');
+        }
 
         if ($lastPing && GeoHelper::distance(
             new Geo($lastPing->lat, $lastPing->lon),
