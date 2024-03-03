@@ -12,7 +12,7 @@ class Map extends Component
 
     public function render()
     {
-        $this->pings = Ping::orderBy('created_at', 'DESC')->take(5)->get();
+        $this->pings = Ping::get();
 
         return view('livewire.map');
     }
