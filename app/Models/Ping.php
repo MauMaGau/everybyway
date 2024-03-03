@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string data
  * @property float lat
  * @property float lon
- * @property int distance
+ * @property int distance_from_last_ping
  * @property Geo geo
  */
 class Ping extends Model

@@ -36,7 +36,7 @@ class PingController extends Controller
                 return Response::HTTP_ALREADY_REPORTED;
             }
 
-            $newPing->distance = $distance;
+            $newPing->distance_from_last_ping = $distance;
         }
 
 //        Log::error(json_encode([$lastPing, $newPing, $distance]));
