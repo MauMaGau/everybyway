@@ -13,7 +13,7 @@
 
 @script
 <script>
-    let map = L.map('map').setView([51.505, -0.09], 7);
+    let map = L.map('map').setView([{{ env('HOME_LAT') }}, {{ env('HOME_LON') }}], 7);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'

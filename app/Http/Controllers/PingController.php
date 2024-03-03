@@ -19,8 +19,9 @@ class PingController extends Controller
         $newPing->data = json_encode($request->query());
         $newPing->lat = $request->get('lat');
         $newPing->lon = $request->get('lon');
+//        $newPing->created_at = $request->get('timestamp');
 
-        if (GeoHelper::distance(
+        if ($lastPing && GeoHelper::distance(
             new Geo($lastPing->lat, $lastPing->lon),
             new Geo(floatval($newPing->lat), floatval($newPing->lon))
             ) < env('MIN_TRAVEL')) {
