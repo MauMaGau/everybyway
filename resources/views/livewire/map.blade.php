@@ -20,9 +20,13 @@
     }).addTo(map);
 
     let pings = @js($pings->select(['lat', 'lon']));
-console.log(pings);
+
+    let line = [];
+
     pings.forEach((ping) => {
-        L.marker([ping.lat, ping.lon]).addTo(map);
+        line.push([ping.lat, ping.lon]);
     });
+
+    L.polygon(line).addTo(map);
 </script>
 @endscript
