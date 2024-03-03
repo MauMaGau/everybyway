@@ -15,7 +15,7 @@ class PingController extends Controller
     public function store(Request $request)
     {
         // Reject any pings that haven't moved since the last one
-        $lastPing = Ping::latest('created_at')->first();
+        $lastPing = Ping::latest()->first();
 
         $newPing = new Ping();
         $newPing->data = json_encode($request->query());
@@ -25,16 +25,21 @@ class PingController extends Controller
             $newPing->created_at = Carbon::createFromTimestamp($request->get('timestamp'))->format('Y-m-d H:i:s');
         }
 
-        $distance = GeoHelper::distance(
-            $lastPing->geo,
-            new Geo(floatval($newPing->lat), floatval($newPing->lon))
-        );
+        if ($lastPing) {
+            $distance = GeoHelper::distance(
+                $lastPing->geo,
+                new Geo(floatval($newPing->lat), floatval($newPing->lon))
+            );
 
-        if ($lastPing && $distance < env('MIN_TRAVEL')) {
-            return Response::HTTP_ALREADY_REPORTED;
+            // No movement, so ignore this ping
+            if ($distance < env('MIN_TRAVEL')) {
+                return Response::HTTP_ALREADY_REPORTED;
+            }
+
+            $newPing->distance = $distance;
         }
 
-        Log::error(json_encode([$lastPing, $newPing, $distance]));
+//        Log::error(json_encode([$lastPing, $newPing, $distance]));
 
         $newPing->save();
 

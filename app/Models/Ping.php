@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\DTOs\Geo;
-use App\Helpers\GeoHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string data
  * @property float lat
  * @property float lon
+ * @property int distance
  * @property Geo geo
  */
 class Ping extends Model
@@ -30,19 +30,19 @@ class Ping extends Model
         );
     }
 
-    public function lat(): Attribute
-    {
-        return Attribute::make(
-            get: fn (float $value, array $attributes) => GeoHelper::protectHomeArea($this->geo)->lat,
-        );
-    }
-
-    public function lon(): Attribute
-    {
-        return Attribute::make(
-            get: fn (float $value, array $attributes) => GeoHelper::protectHomeArea($this->geo)->lon,
-        );
-    }
+//    public function lat(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn (float $value, array $attributes) => GeoHelper::protectHomeArea($this->geo)->lat,
+//        );
+//    }
+//
+//    public function lon(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn (float $value, array $attributes) => GeoHelper::protectHomeArea($this->geo)->lon,
+//        );
+//    }
 
 
 }
