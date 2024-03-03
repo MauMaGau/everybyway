@@ -38,7 +38,8 @@ class GeoHelper
     public static function anonymiseGeo(Geo $location): Geo
     {
         // This is bad. It'll end up creating a circle perfectly surrounding my house.
-        // Maybe set to the nearest 'grid square'?
+        // Maybe set to the nearest 'grid square' - something static that isn't my house?
+        // For now I've just set my home to not be my actual home
         $noise = env('HOME_RADIUS');
         $location->lat += mt_rand(-$noise, $noise) / 100;
         $location->lon += mt_rand(-$noise, $noise) / 100;

@@ -20,7 +20,10 @@ class PingController extends Controller
         $newPing->lat = $request->get('lat');
         $newPing->lon = $request->get('lon');
 
-        if (GeoHelper::distance(new Geo($lastPing->lat, $lastPing->lon), new Geo($newPing->lat, $newPing->lon)) < env('MIN_TRAVEL')) {
+        if (GeoHelper::distance(
+            new Geo($lastPing->lat, $lastPing->lon),
+            new Geo(floatval($newPing->lat), floatval($newPing->lon))
+            ) < env('MIN_TRAVEL')) {
             return Response::HTTP_ALREADY_REPORTED;
         }
 
