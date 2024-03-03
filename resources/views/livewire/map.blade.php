@@ -22,7 +22,6 @@
     let pings = @js($pings->select(['lat', 'lon']));
 console.log(pings);
     pings.forEach((ping) => {
-        console.log(ping);
         L.marker([ping.lat, ping.lon]).addTo(map);
     });
 </script>

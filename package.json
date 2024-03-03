@@ -1,5 +1,11 @@
 {
     "private": true,
+    "name": "Each and every byway",
+    "description": "",
+    "version": "1.0.0",
+    "engines": {
+        "node": "20.x"
+    },
     "type": "module",
     "scripts": {
         "dev": "vite",
