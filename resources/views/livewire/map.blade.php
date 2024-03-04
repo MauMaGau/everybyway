@@ -27,7 +27,7 @@
         line.push([ping.lat, ping.lon]);
     });
 
-    L.polygon(line).addTo(map);
+    L.polyline(line).addTo(map);
 
 </script>
 @endscript
