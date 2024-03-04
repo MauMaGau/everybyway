@@ -16,4 +16,10 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    // test ping is created when correct data passed
+
+    // test ping is not created when last ping was too close
+
+    // test map page is available
 }

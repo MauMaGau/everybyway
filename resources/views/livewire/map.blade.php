@@ -1,4 +1,4 @@
-<div>
+<div id="content">
     <div id="map"></div>
 </div>
 
@@ -13,7 +13,7 @@
 
 @script
 <script>
-    let map = L.map('map').setView([{{ env('HOME_LAT') }}, {{ env('HOME_LON') }}], 7);
+    let map = L.map('map').setView([{{ env('HOME_LAT') }}, {{ env('HOME_LON') }}], 9);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -28,5 +28,6 @@
     });
 
     L.polygon(line).addTo(map);
+
 </script>
 @endscript

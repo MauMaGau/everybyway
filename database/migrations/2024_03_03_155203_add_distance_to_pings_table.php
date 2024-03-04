@@ -13,6 +13,20 @@ return new class extends Migration
     {
         Schema::table('pings', function (Blueprint $table) {
             $table->integer('distance_from_last_ping')->after('lon');
+
+            // Let's populate the legacy data
+            $pings = \App\Models\Ping::get();
+
+            $lastPing = null; // No variable type hinting yet :(
+
+            $pings->each(function(\App\Models\Ping $ping) use (&$lastPing) {
+                if ($lastPing) {
+                    $distance = \App\Helpers\GeoHelper::distance($lastPing->geo, $ping->geo);
+                    $ping->distance_from_last_ping = $distance;
+                }
+
+                $lastPing = $ping;
+            });
         });
     }
 

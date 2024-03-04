@@ -1,2 +1,5 @@
-#map { height: 1800px; }
-body {background-color: red;}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body, html, #content, #map {height:100%}

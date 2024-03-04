@@ -12,7 +12,7 @@ class Map extends Component
 
     public function render()
     {
-        $this->pings = Ping::get();
+        $this->pings = Ping::where('is_home_area', false)->get();
 
         return view('livewire.map');
     }
