@@ -3,13 +3,19 @@
 namespace App\Models;
 
 use App\DTOs\Geo;
+use App\Events\PingSaving;
 use App\Helpers\GeoHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int userId
+ * @property int id
+ * @property int user_id
+ * @property User user
+ * @property int bimble_id
+ * @property Bimble bimble
  * @property string data
  * @property float lat
  * @property float lon
@@ -21,22 +27,16 @@ class Ping extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'is_home_area' => 'boolean',
+    ];
+
     protected $hidden = [
         'data',
     ];
 
-    protected static function booted(): void
-    {
-        // Rather than using an Event, it's more readable to keep any property manipulation within the model
-        static::saving(function (Ping $ping) {
-            if (GeoHelper::distance(
-                new Geo(env('HOME_LAT'), env('HOME_LON')),
-                $ping->geo
-            ) < env('HOME_RADIUS')) {
-                $ping->is_home_area = true;
-            }
-        });
-    }
+    protected $dispatchesEvents = ['saving' => PingSaving::class];
+
 
     public function geo(): Attribute
     {
@@ -59,9 +59,14 @@ class Ping extends Model
 //        );
 //    }
 
-    public function scopeHideHome()
+    public function user(): BelongsTo
     {
+        return $this->belongsTo(User::class);
+    }
 
+    public function bimble(): BelongsTo
+    {
+        return $this->belongsTo(Bimble::class);
     }
 
 

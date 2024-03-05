@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('pings', function (Blueprint $table) {
-            $table->float('lat', 11, 11-2)->after('data'); // (+/- 90)
-            $table->float('lon', 11, 11-3)->after('lat'); // (+/- 180)
+        Schema::create('bimbles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -22,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('pings', function (Blueprint $table) {
-            $table->dropColumn(['lat', 'lon']);
-        });
+        Schema::dropIfExists('bimbles');
     }
 };
