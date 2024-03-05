@@ -1,6 +1,4 @@
-<div id="content">
-    <div id="map"></div>
-</div>
+<div id="map" class="h-full"></div>
 
 @assets
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
