@@ -60,6 +60,6 @@ class User extends Authenticatable
 
     public function HomeAreas(): HasMany
     {
-        return $this->hasMany(homeArea::class);
+        return $this->hasMany(HomeArea::class);
     }
 }

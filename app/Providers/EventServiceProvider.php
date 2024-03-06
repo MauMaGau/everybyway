@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\PingCreating;
 use App\Events\PingSaving;
 use App\Listeners\AddHomeAreaToBimble;
 use App\Listeners\AddPingToBimble;
+use App\Listeners\AddCapturedAtToPing;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,9 +24,10 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         PingSaving::class => [
+            AddCapturedAtToPing::class,
             AddPingToBimble::class,
             AddHomeAreaToBimble::class,
-        ]
+        ],
     ];
 
     /**

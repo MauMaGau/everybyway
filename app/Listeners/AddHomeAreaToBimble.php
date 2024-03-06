@@ -25,6 +25,10 @@ class AddHomeAreaToBimble
      */
     public function handle(PingSaving $event): void
     {
+        if ($event->ping->user->HomeAreas->isEmpty()) {
+            return;
+        }
+
         $event->ping->user->homeAreas->each(function(HomeArea $homeArea) use ($event) {
             if (GeoHelper::distance(
                     $homeArea->geo,

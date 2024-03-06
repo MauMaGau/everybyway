@@ -3,29 +3,33 @@
 namespace App\Models;
 
 use App\DTOs\Geo;
+use App\Events\PingCreating;
 use App\Events\PingSaving;
-use App\Helpers\GeoHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int id
- * @property int user_id
- * @property User user
- * @property int bimble_id
+ * @property int    id
+ * @property int    user_id
+ * @property User   user
+ * @property int    bimble_id
  * @property Bimble bimble
  * @property string data
- * @property float lat
- * @property float lon
- * @property int distance_from_last_ping
- * @property bool is_home_area
- * @property Geo geo
+ * @property float  lat
+ * @property float  lon
+ * @property int    distance_from_last_ping
+ * @property bool   is_home_area
+ * @property int    $captured_at
+ * @property ?Ping  previousPing
+ * @property Geo    geo
  */
 class Ping extends Model
 {
     use HasFactory;
+
+    protected ?Ping $previousPing = null;
 
     protected $casts = [
         'is_home_area' => 'boolean',
@@ -35,7 +39,7 @@ class Ping extends Model
         'data',
     ];
 
-    protected $dispatchesEvents = ['saving' => PingSaving::class];
+    protected $dispatchesEvents = ['saving' => PingSaving::class, 'creating' => PingCreating::class];
 
 
     public function geo(): Attribute
@@ -69,5 +73,23 @@ class Ping extends Model
         return $this->belongsTo(Bimble::class);
     }
 
+    /*
+     * singleton-ish method to get the ping previous to this one
+     * */
+    public function previousPing(): ?Ping
+    {
+        if ($this->previousPing) {
+            return $this->previousPing;
+        }
 
+        $previousPing = self::where('user_id', $this->user_id)->where('captured_at', '<=', $this->captured_at)->where('id', '!=', $this->id)->latest()->first();
+
+        if (!$previousPing) {
+            return null;
+        }
+
+        $this->previousPing = $previousPing;
+
+        return $this->previousPing;
+    }
 }

@@ -21,8 +21,9 @@ class PingController extends Controller
         $newPing->data = json_encode($request->query());
         $newPing->lat = $request->get('lat');
         $newPing->lon = $request->get('lon');
+
         if ($request->has('timestamp')) {
-            $newPing->created_at = Carbon::createFromTimestamp($request->get('timestamp'))->format('Y-m-d H:i:s');
+            $newPing->captured_at = Carbon::createFromTimestamp($request->get('timestamp'))->toDateTimeString();
         }
 
         if ($lastPing) {

@@ -30,4 +30,18 @@ class PingEventTest extends TestCase
 
         $this->assertFalse($ping->is_home_area);
     }
+
+    public function test_distance_is_set_on_save(): void
+    {
+        $ping1 = Ping::factory()->create(['lat' => 0, 'lon' => 0]);
+        $ping2 = Ping::factory()->create(['lat' => 1, 'lon' => 0]);
+
+        dd($ping2->distance());
+        $this->assertFalse($ping->distance);
+    }
+
+    public function test_bimble_is_set(): void
+    {
+
+    }
 }
