@@ -17,9 +17,6 @@ class AddPingToBimble
         //
     }
 
-    /**
-     * If the
-     */
     public function handle(PingSaving $event): void
     {
         $previousPing = $event->ping->previousPing();

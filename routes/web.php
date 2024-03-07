@@ -17,7 +17,7 @@ Route::view('/', 'home')->name('welcome');
 
 //Route::get('/map', \App\Livewire\Map::class);
 
-Route::resource('ping', \App\Http\Controllers\PingController::class);
+
 
 //Route::view('dashboard', 'dashboard')
 //    ->middleware(['auth', 'verified'])
