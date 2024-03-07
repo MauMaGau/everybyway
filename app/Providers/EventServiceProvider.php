@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\PingCreating;
 use App\Events\PingSaving;
+use App\Listeners\AddDistanceToPing;
 use App\Listeners\AddHomeAreaToBimble;
 use App\Listeners\AddPingToBimble;
 use App\Listeners\AddCapturedAtToPing;
@@ -27,6 +28,7 @@ class EventServiceProvider extends ServiceProvider
             AddCapturedAtToPing::class,
             AddPingToBimble::class,
             AddHomeAreaToBimble::class,
+            AddDistanceToPing::class,
         ],
     ];
 

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\HomeArea;
 use App\Models\Ping;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -33,15 +34,33 @@ class PingEventTest extends TestCase
 
     public function test_distance_is_set_on_save(): void
     {
-        $ping1 = Ping::factory()->create(['lat' => 0, 'lon' => 0]);
-        $ping2 = Ping::factory()->create(['lat' => 1, 'lon' => 0]);
+        $user = User::factory()->create();
+        $ping1 = Ping::factory()->create(['lat' => 0, 'lon' => 0, 'user_id' => $user->id]);
+        $ping2 = Ping::factory()->create(['lat' => 1, 'lon' => 0, 'user_id' => $user->id]);
 
-        dd($ping2->distance());
-        $this->assertFalse($ping->distance);
+        $this->assertNull($ping1->distance_from_last_ping);
+        $this->assertNotNull($ping2->distance_from_last_ping);
     }
 
     public function test_bimble_is_set(): void
     {
+        $user = User::factory()->create();
+        $ping1 = Ping::factory()->create(['lat' => 0, 'lon' => 0, 'user_id' => $user->id]);
+        $ping2 = Ping::factory()->create(['lat' => 1, 'lon' => 0, 'user_id' => $user->id]);
 
+        $this->assertNotEmpty($ping1->bimble);
+        $this->assertNotEmpty($ping2->bimble);
+        $this->assertTrue($ping1->bimble->is($ping2->bimble));
+    }
+
+    public function test_new_bimble_is_created_if_previous_ping_too_long_ago(): void
+    {
+        $user = User::factory()->create();
+        $ping1 = Ping::factory()->create(['lat' => 0, 'lon' => 0, 'user_id' => $user->id, 'captured_at' => Carbon::now()->subMinutes(env('BIMBLE_TIMEOUT') + 1)]);
+        $ping2 = Ping::factory()->create(['lat' => 1, 'lon' => 0, 'user_id' => $user->id]);
+
+        $this->assertNotEmpty($ping1->bimble);
+        $this->assertNotEmpty($ping2->bimble);
+        $this->assertFalse($ping1->bimble->is($ping2->bimble));
     }
 }

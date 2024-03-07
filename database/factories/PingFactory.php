@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,6 +22,7 @@ class PingFactory extends Factory
             'lat' => fake()->randomFloat(9,11,11),
             'lon' => fake()->randomFloat(8,11,11),
             'is_home_area' => false,
+            'user_id' => User::factory()->create()->id,
         ];
     }
 }
