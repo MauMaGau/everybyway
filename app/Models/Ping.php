@@ -48,20 +48,6 @@ class Ping extends Model
         );
     }
 
-//    public function lat(): Attribute
-//    {
-//        return Attribute::make(
-//            get: fn (float $value, array $attributes) => GeoHelper::protectHomeArea($this->geo)->lat,
-//        );
-//    }
-//
-//    public function lon(): Attribute
-//    {
-//        return Attribute::make(
-//            get: fn (float $value, array $attributes) => GeoHelper::protectHomeArea($this->geo)->lon,
-//        );
-//    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
