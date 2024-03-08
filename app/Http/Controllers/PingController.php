@@ -27,7 +27,7 @@ class PingController extends Controller
         $lastPing = $newPing->previousPing();
         if ($lastPing) {
             $distance = GeoHelper::distance(
-                $lastPing->previousPing->geo,
+                $lastPing->geo,
                 $newPing->geo
             );
 

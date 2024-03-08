@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Ping;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +15,9 @@ class PingTest extends TestCase
 
     public function test_ping_post_ok(): void
     {
-        User::factory()->create();
+        $user = User::factory()->create();
+
+        Ping::factory()->create(['user_id' => $user->id]);
 
         $response = $this->post(route('api.ping', ['lat'=> 0, 'lon' => 0, 'timestamp' => Carbon::now()->timestamp]));
 
