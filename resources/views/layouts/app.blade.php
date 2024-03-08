@@ -3,7 +3,7 @@
     @include('layouts.partials.head')
 
     <body>
-        <div id="content" class="h-screen flex flex-col">
+        <div class="h-screen flex flex-col">
             {{ $slot }}
         </div>
     </body>

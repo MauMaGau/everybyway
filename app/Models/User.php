@@ -48,17 +48,17 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function Pings(): HasMany
+    public function pings(): HasMany
     {
         return $this->hasMany(Ping::class);
     }
 
-    public function Bimbles(): HasMany
+    public function bimbles(): HasMany
     {
         return $this->hasMany(Bimble::class);
     }
 
-    public function HomeAreas(): HasMany
+    public function homeAreas(): HasMany
     {
         return $this->hasMany(HomeArea::class);
     }

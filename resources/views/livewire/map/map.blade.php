@@ -1,4 +1,4 @@
-<div id="map" class="h-full"></div>
+<div id="map" class="h-full flex-grow"></div>
 
 @assets
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
