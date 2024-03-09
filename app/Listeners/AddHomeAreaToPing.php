@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-class AddHomeAreaToBimble
+class AddHomeAreaToPing
 {
     /**
      * Create the event listener.
@@ -25,17 +25,6 @@ class AddHomeAreaToBimble
      */
     public function handle(PingSaving $event): void
     {
-        if ($event->ping->user->HomeAreas->isEmpty()) {
-            return;
-        }
-
-        $event->ping->user->homeAreas->each(function(HomeArea $homeArea) use ($event) {
-            if (GeoHelper::distance(
-                    $homeArea->geo,
-                    $event->ping->geo
-                ) < env('HOME_RADIUS')) {
-                $event->ping->is_home_area = true;
-            }
-        });
+        $event->ping->is_home_area = $event->ping->isPingInHomeArea();
     }
 }

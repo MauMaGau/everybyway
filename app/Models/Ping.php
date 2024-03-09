@@ -5,6 +5,7 @@ namespace App\Models;
 use App\DTOs\Geo;
 use App\Events\PingCreating;
 use App\Events\PingSaving;
+use App\Helpers\GeoHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -76,5 +77,12 @@ class Ping extends Model
         $this->previousPing = $previousPing;
 
         return $this->previousPing;
+    }
+
+    public function isPingInHomeArea(): bool
+    {
+        return $this->user->homeAreas->first(function ($homeArea) {
+            return GeoHelper::distance($homeArea->geo, $this->geo) < env('HOME_RADIUS');
+        }) !== null;
     }
 }

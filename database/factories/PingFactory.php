@@ -24,7 +24,6 @@ class PingFactory extends Factory
             'lon' => fake()->randomFloat(8,11,11),
             'captured_at' => Carbon::now()->toDateTimeString(),
             'is_home_area' => false,
-            'user_id' => User::factory()->create()->id,
         ];
     }
 }
