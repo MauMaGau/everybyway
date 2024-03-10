@@ -1,7 +1,7 @@
 @php use Carbon\Carbon; @endphp
-<nav class="h-full w-[300px] bg-white border border-4-1 border-gray-100 pl-3">
-    <h3>Bimbles</h3>
-    <ul class="pl-3">
+<nav class="h-full w-[160px] bg-white border border-4-1 border-gray-100 pl-3">
+    <h3 class="mt-2">Bimbles</h3>
+    <ul>
         @foreach($months as $month)
             <li wire:key="{{ $month['id'] }}">
                 <x-nav-link wire:click="filter('{{ $month['number'] }}')">
