@@ -6,6 +6,7 @@ use App\DTOs\Geo;
 use App\Events\PingCreating;
 use App\Events\PingSaving;
 use App\Helpers\GeoHelper;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float  lon
  * @property int    distance_from_last_ping
  * @property bool   is_home_area
- * @property int    $captured_at
+ * @property Carbon $captured_at
  * @property ?Ping  previousPing
  * @property Geo    geo
  */
@@ -33,6 +34,7 @@ class Ping extends Model
     protected ?Ping $previousPing = null;
 
     protected $casts = [
+        'captured_at' => 'datetime',
         'is_home_area' => 'boolean',
     ];
 

@@ -62,3 +62,12 @@ I want to see all my rides on the map, but also when I took them. I'm guessing r
 Oh and I'm sure I'll want to be able to delete certain rides. Or rather times I forgot to stop the tracking app.
 
 And of course I want all this to be done with zero-touch from me. So maybe the next step is to look into the hardware.
+
+
+## TODO
+* Route smoothing
+* Encrypt lat & lon 
+* Select single journey
+* Select day of journeys
+* Export to gpx
+* Import from gpx

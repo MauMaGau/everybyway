@@ -17,15 +17,70 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    let pings = @js($pings->select(['lat', 'lon']));
+    let allLayers = new Map();
+    let visibleLayers = new Map(); // We'll store each bimble in a layer
+    let hiddenLayers = new Map();
+    let bimbleLayerGroup = L.layerGroup();
 
-    let line = [];
+    // Add all bimbles to map as layers, containing pings of bimble
+    // Ensure layer has id of bimble, so we can toggle visibility later
+    @js($bimbles).forEach((bimble) => {
+        // Create a line for the bimble
+        let line = [];
+        bimble.pings.forEach((ping) => {
+            line.push([ping.lat, ping.lon]);
+        });
 
-    pings.forEach((ping) => {
-        line.push([ping.lat, ping.lon]);
+        // Add the line to the bimble layer group
+        let layer = L.polyline(line);
+        bimbleLayerGroup.addLayer(layer);
+        visibleLayers.set(bimble.id, bimbleLayerGroup.getLayerId(layer));
+        allLayers.set(bimble.id, bimbleLayerGroup.getLayerId(layer));
+
     });
 
-    L.polyline(line).addTo(map);
+    // add the group of bimble layers to the map
+    bimbleLayerGroup.addTo(map);
+
+
+    Livewire.on('bimbles-changed', (data) => {
+        // Hide all layers, show any that we should
+        let newVisibleLayers = new Map();
+        let newHiddenLayers = new Map(allLayers);
+
+        allLayers.forEach(function(layerId, bimbleId) {
+            console.log(bimbleId, layerId);
+            Object.values(data.bimbles).forEach((bimble) => {
+                if (bimble.id === bimbleId) {
+                    newVisibleLayers.set(bimbleId, layerId);
+                    newHiddenLayers.delete(bimbleId);
+                }
+            });
+        });
+
+        visibleLayers = new Map(newVisibleLayers);
+        hiddenLayers = new Map(newHiddenLayers);
+
+        visibleLayers.values().forEach((layerId) => {
+            console.log(layerId, 'show');
+            let layer = bimbleLayerGroup.getLayer(layerId);
+            layer.options.opacity = 1;
+            layer.setStyle(layer.options);
+        });
+        hiddenLayers.values().forEach((layerId) => {
+            console.log(layerId, 'hide');
+            let layer = bimbleLayerGroup.getLayer(layerId);
+            layer.options.opacity = 0;
+            layer.setStyle(layer.options);
+        });
+
+
+
+        // show any hidden bimbles that shouldn't be hidden
+
+
+
+    });
 
 </script>
 @endscript

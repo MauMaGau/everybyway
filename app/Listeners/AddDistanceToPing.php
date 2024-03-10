@@ -30,7 +30,7 @@ class AddDistanceToPing
 
             $distance = GeoHelper::distance(
                 $lastPing->geo,
-                new Geo(floatval($newPing->lat), floatval($newPing->lon))
+                $newPing->geo
             );
 
             $newPing->distance_from_last_ping = $distance;
