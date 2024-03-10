@@ -67,7 +67,7 @@ And of course I want all this to be done with zero-touch from me. So maybe the n
 ## TODO
 * Route smoothing
 * Encrypt lat & lon 
-* Select single journey
+* ~~Select single journey~~
 * Select day of journeys
 * Export to gpx
 * Import from gpx

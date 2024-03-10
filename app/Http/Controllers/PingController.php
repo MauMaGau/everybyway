@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\DTOs\Geo;
 use App\Helpers\GeoHelper;
 use App\Http\Requests\StorePingRequest;
 use App\Models\Ping;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 class PingController extends Controller
 {
-    public function store(StorePingRequest $request)
+    public function store(StorePingRequest $request): JsonResponse
     {
         $user = User::firstOrFail();
 
@@ -33,12 +32,12 @@ class PingController extends Controller
 
             // No movement, so ignore this ping
             if ($distance < env('MIN_TRAVEL')) {
-                return Response::HTTP_ALREADY_REPORTED;
+                return response()->json([], Response::HTTP_ALREADY_REPORTED);
             }
         }
 
         $newPing->save();
 
-        return Response::HTTP_ACCEPTED;
+        return response()->json([], Response::HTTP_ACCEPTED);
     }
 }

@@ -26,7 +26,6 @@ class Map extends Component
         $this->bimbles = Bimble::withWhereHas('pings', function ($query) {
             $query->where('is_home_area', false);
         })->get();
-//        $this->pings = Ping::where('is_home_area', false)->get();
 
         if (Auth::guest()) {
             return view('livewire.map.map')->layout('layouts.guest')->section('slot');
