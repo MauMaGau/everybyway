@@ -46,10 +46,11 @@ class Sidenav extends Component
 
     public function render(): View
     {
-        $this->bimbles = auth()->user()->bimbles;
+        $this->bimbles = auth()->user()->bimbles()->havingPublicPings()->get();
+
         $this->months = [];
 
-        for($monthId=0; $monthId < 10; $monthId++) {
+        for ($monthId=0; $monthId < 10; $monthId++) {
             $month = Carbon::now()->subMonths($monthId);
 
             $bimbles = $this->bimbles->filter(function($bimble) use ($month) {
@@ -73,8 +74,6 @@ class Sidenav extends Component
                 'number' => $month->month,
                 'days' => $days,
             ];
-
-
         }
 
         return view('livewire.layout.sidenav');

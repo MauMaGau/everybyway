@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -35,5 +36,19 @@ class Bimble extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function scopeHavingPublicPings(Builder $query): void
+    {
+        $query->whereHas('pings', function ($query) {
+            $query->where('is_home_area', false);
+        });
+    }
+
+    public function scopeWithPublicPings(Builder $query): void
+    {
+        $query->withWhereHas('pings', function ($query) {
+            $query->where('is_home_area', false);
+        });
     }
 }

@@ -42,7 +42,6 @@ class AddPingToBimble
             $event->ping->bimble()->associate($previousPing->bimble);
             $event->ping->bimble->ended_at = $event->ping->captured_at;
             $event->ping->bimble->save();
-            return;
         }
     }
 }

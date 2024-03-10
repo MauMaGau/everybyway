@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @property int    id
@@ -59,6 +60,11 @@ class Ping extends Model
     public function bimble(): BelongsTo
     {
         return $this->belongsTo(Bimble::class);
+    }
+
+    public function scopePublic(Builder $query): void
+    {
+        $query->where('is_home_area', false);
     }
 
     /*

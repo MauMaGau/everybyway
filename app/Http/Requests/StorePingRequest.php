@@ -25,6 +25,7 @@ class StorePingRequest extends FormRequest
             'lat' => ['required'],
             'lon' => ['required'],
             'timestamp' => ['required'],
+            'acc' => ['required'],
         ];
     }
 }

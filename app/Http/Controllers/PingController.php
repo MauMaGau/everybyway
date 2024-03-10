@@ -34,6 +34,11 @@ class PingController extends Controller
             if ($distance < env('MIN_TRAVEL')) {
                 return response()->json([], Response::HTTP_ALREADY_REPORTED);
             }
+
+            // The movement is less than the accuracy of the signal, no point trusting it
+            if ($distance < $request->get('acc')) {
+                return response()->json([], Response::HTTP_NOT_ACCEPTABLE);
+            }
         }
 
         $newPing->save();
