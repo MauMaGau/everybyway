@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\PingSaving;
+use App\Events\PingCreating;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,7 +17,7 @@ class AddPingToBimble
         //
     }
 
-    public function handle(PingSaving $event): void
+    public function handle(PingCreating $event): void
     {
         $previousPing = $event->ping->previousPing();
 
