@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Livewire\Forms;
+namespace App\Livewire\Components;
 
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
-use Livewire\Form;
+use Livewire\Component;
 
-class LoginForm extends Form
+class LoginForm extends Component
 {
     #[Validate('required|string|email')]
     public string $email = '';
@@ -20,6 +21,17 @@ class LoginForm extends Form
 
     #[Validate('boolean')]
     public bool $remember = false;
+
+    public function login(): void
+    {
+        $this->validate();
+
+        $this->authenticate();
+
+        Session::regenerate();
+
+        $this->redirectIntended(default: route('home'), navigate: true);
+    }
 
     /**
      * Attempt to authenticate the request's credentials.
@@ -39,6 +51,11 @@ class LoginForm extends Form
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    public function render()
+    {
+        return view('livewire.components.login-form');
     }
 
     /**

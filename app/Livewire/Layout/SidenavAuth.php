@@ -2,13 +2,14 @@
 
 namespace App\Livewire\Layout;
 
+use App\Livewire\Actions\Logout;
 use App\Models\Bimble;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Component;
 
-class Sidenav extends Component
+class SidenavAuth extends Component
 {
     public Collection $bimbles;
     public array      $months;
@@ -44,6 +45,13 @@ class Sidenav extends Component
         $this->dispatch('bimbles-changed', bimbles: $filteredBimbles);
     }
 
+    public function logout(Logout $logout): void
+    {
+        $logout();
+
+        $this->redirect('/', navigate: true);
+    }
+
     public function render(): View
     {
         $this->bimbles = auth()->user()->bimbles()->havingPublicPings()->get();
@@ -76,6 +84,6 @@ class Sidenav extends Component
             ];
         }
 
-        return view('livewire.layout.sidenav');
+        return view('livewire.layout.sidenav-auth');
     }
 }
