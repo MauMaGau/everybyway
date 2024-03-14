@@ -3,46 +3,48 @@
 
     <x-sidenav-header></x-sidenav-header>
 
-    <ul
-        x-data="{ expanded: false }">
-        @foreach($months as $month)
-            <li
-                wire:key="{{ $month['id'] }}"
-                x-data="{ expanded: false }">
+    <ul >
+        <template
+            x-for="month in $wire.months"
+            wire:key="month.id"
+            x-data="{ showing: $wire.entangle('showing') }">
+            <li>
                 <a
-                    wire:click="filter('{{ $month['number'] }}')"
-                    x-on:click="expanded = ! expanded">
-                    {{ $month['text'] }}
+                    wire:click="filter(month.number)"
+                    x-on:click="showing[month.id].active = !showing[month.id].active"
+                    x-text="month.text">
                 </a>
                 <ul
-                    x-show="expanded"
+                    x-show="showing[month.id].active"
                     x-transition>
-                    @foreach($month['days'] as $day)
-                        <li
-                            wire:key="{{ $day['date'] }}"
-                            x-data="{ expanded: false }">
+                    <template
+                        x-for="day in month.days"
+                        wire:key="day.id">
+                        <li>
                             <a
-                                wire:click="filter('{{ $month['number'] }}', '{{$day['date'] }}')"
-                                x-on:click="expanded = ! expanded">
-                                {{ $day['date']->format('jS') }}
+                                wire:click="filter(month.number, day.date)"
+                                x-on:click="showing[month.id].days[day.id].active = !showing[month.id].days[day.id].active"
+                                x-text="day.date_display">
                             </a>
                             <ul
-                                x-show="expanded">
-                                @foreach($day['bimbles'] as $bimble)
-                                    <li
-                                        wire:key="{{ $bimble->started_at }}">
+                                x-show="showing[month.id].days[day.id].active">
+                                <template
+                                    x-for="bimble in day.bimbles"
+                                    wire:key="bimble.id">
+                                    <li>
                                         <a
-                                            wire:click="filter('{{ $month['number'] }}', '{{$day['date'] }}', '{{ $bimble->started_at }}')">
-                                            {{ $bimble->started_at->format('H:i') }} - {{ $bimble->ended_at->format('H:i') }}
+                                            wire:click="filter(month.number, day.date, bimble.started_at)"
+                                            x-on:click="showing[month.id].days[day.id].bimbles[bimble.id].active = !showing[month.id].days[day.id].bimbles[bimble.id].active"
+                                            x-text="bimble.started_at_display + ' - ' + bimble.ended_at_display">
                                         </a>
                                     </li>
-                                @endforeach
+                                </template>
                             </ul>
                         </li>
-                    @endforeach
+                    </template>
                 </ul>
             </li>
-        @endforeach
+        </template>
     </ul>
 
     <livewire:components.logout-button/>
