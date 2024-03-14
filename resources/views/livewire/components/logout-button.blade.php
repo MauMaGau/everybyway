@@ -13,4 +13,4 @@ new class extends Component {
     }
 }; ?>
 
-<button wire:click="logout">logout fool</button>
+<button wire:click="logout">Logout</button>

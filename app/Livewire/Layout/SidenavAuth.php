@@ -81,6 +81,7 @@ class SidenavAuth extends Component
                 'text' => $month->monthName,
                 'number' => $month->month,
                 'days' => $days,
+                'active' => false,
             ];
         }
 
