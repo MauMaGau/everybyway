@@ -13,38 +13,6 @@ class SidenavAuth extends Component
 {
     public Collection $bimbles;
     public array $months;
-    public array $showing;
-
-    public function filter(int $month = null, string $day = null, string $time = null): void
-    {
-        if (!$month && !$day && !$time) {
-            $this->dispatch('bimbles-changed', bimbles: $this->bimbles);
-        }
-
-        $filteredBimbles = $this->bimbles->filter(function (Bimble $bimble) use ($month, $day, $time) {
-            if ($month) {
-                if ($bimble->started_at->month !== $month) {
-                    return false;
-                }
-            }
-
-            if ($day) {
-                if (!$bimble->started_at->isSameDay($day)) {
-                    return false;
-                }
-            }
-
-            if ($time) {
-                if (!$bimble->started_at->isSameAs('Y-m-d H:i:s', $time)) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        $this->dispatch('bimbles-changed', bimbles: $filteredBimbles);
-    }
 
     public function logout(Logout $logout): void
     {
@@ -56,44 +24,48 @@ class SidenavAuth extends Component
     public function render(): View
     {
         $this->bimbles = auth()->user()->bimbles()->havingPublicPings()->get();
-
-        $this->months = [];
+        $filteredBimbles = []; // bimbles for the map js
 
         for ($monthId = 0; $monthId < 10; $monthId++) {
-            $month = Carbon::now()->subMonths($monthId);
+            $monthDate = Carbon::now()->subMonths($monthId);
 
-            $bimbles = $this->bimbles->filter(function ($bimble) use ($month) {
-                return $bimble->started_at->month === $month->month;
+            $bimbles = $this->bimbles->filter(function ($bimble) use ($monthDate) {
+                return $bimble->started_at->month === $monthDate->month;
             });
 
-            $days = [];
+            $days = $this->months[$monthId]['days'] ?? [];
 
-            $bimbles->each(function (Bimble $bimble) use (&$days, $monthId) {
-                $days[$bimble->started_at->day]['id'] = $bimble->started_at->day;
-                $days[$bimble->started_at->day]['date_display'] = $bimble->started_at->format('jS');
-                $days[$bimble->started_at->day]['active'] = false;
+            $bimbles->each(function (Bimble $bimble) use (&$days, $monthId, &$filteredBimbles) {
+                $dayId = $bimble->started_at->day;
+
+                $days[$dayId]['id'] = $bimble->started_at->day;
+                $days[$dayId]['date_display'] = $bimble->started_at->format('jS');
+                $days[$dayId]['active'] = $days[$dayId]['active'] ?? false;
 
                 $bimble->started_at_display = $bimble->started_at->format('H:i');
                 $bimble->ended_at_display = $bimble->ended_at->format('H:i');
+                $bimble->active = $days[$dayId]['bimbles'][$bimble->id]->active ?? false;
 
-                $this->showing[$monthId]['days'][$bimble->started_at->day]['bimbles'][$bimble->id] = ['active' => $this->showing[$monthId]['days'][$bimble->started_at->day]['bimbles'][$bimble->id] ?? false];
-                $this->showing[$monthId]['days'][$bimble->started_at->day]['active'] = $this->showing[$monthId]['days'][$bimble->started_at->day]['active'] ?? false;
-                $this->showing[$monthId]['active'] = $this->showing[$monthId]['active'] ?? false;
+                $days[$dayId]['bimbles'][$bimble->id] = $bimble->toArray();
 
-                $days[$bimble->started_at->day]['bimbles'][$bimble->started_at->toDateTimeString()] = $bimble->toArray();
+//                if ($bimble->active) {
+//                    $filteredBimbles[] = $bimble;
+//                } elseif ($days[$dayId]['active'] && ) // TODO: If no siblings active, all bimbles in day should be active
             });
 
             if ($bimbles->isEmpty()) {
                 continue;
             }
 
-            $this->months[$monthId] = [
-                'id' => $monthId,
-                'text' => $month->monthName,
-                'number' => $month->month,
-                'days' => $days,
-            ];
+            $month = $this->months[$monthId] ?? [];
+            $this->months[$monthId]['id'] = $monthId;
+            $this->months[$monthId]['text'] = $monthDate->monthName;
+            $this->months[$monthId]['number'] = $monthDate->month;
+            $this->months[$monthId]['days'] = $days;
+            $this->months[$monthId]['active'] = $month['active'] ?? false;
         }
+
+        $this->dispatch('bimbles-changed', bimbles: $filteredBimbles);
 
         return view('livewire.layout.sidenav-auth');
     }
