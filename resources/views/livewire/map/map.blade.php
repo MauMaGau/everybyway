@@ -44,6 +44,7 @@
 
 
     Livewire.on('bimbles-changed', (data) => {
+        console.log(data);
         // Hide all layers, show any that we should
         let newVisibleLayers = new Map();
         let newHiddenLayers = new Map(allLayers);

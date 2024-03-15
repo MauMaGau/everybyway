@@ -4,69 +4,117 @@ namespace App\Livewire\Layout;
 
 use App\Livewire\Actions\Logout;
 use App\Models\Bimble;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Component;
 
 class SidenavAuth extends Component
 {
-    public Collection $bimbles;
-    public array $months;
-
-    public function logout(Logout $logout): void
-    {
-        $logout();
-
-        $this->redirect('/', navigate: true);
-    }
+    //    public Collection $bimbles;
+    public array $navTree = [];
+    public array $debug;
 
     public function render(): View
     {
-        $this->bimbles = auth()->user()->bimbles()->havingPublicPings()->get();
-        $filteredBimbles = []; // bimbles for the map js
+        $bimbles = auth()->user()->bimbles()->havingPublicPings()->get();
 
-        for ($monthId = 0; $monthId < 10; $monthId++) {
-            $monthDate = Carbon::now()->subMonths($monthId);
-
-            $bimbles = $this->bimbles->filter(function ($bimble) use ($monthDate) {
-                return $bimble->started_at->month === $monthDate->month;
-            });
-
-            $days = $this->months[$monthId]['days'] ?? [];
-
-            $bimbles->each(function (Bimble $bimble) use (&$days, $monthId, &$filteredBimbles) {
-                $dayId = $bimble->started_at->day;
-
-                $days[$dayId]['id'] = $bimble->started_at->day;
-                $days[$dayId]['date_display'] = $bimble->started_at->format('jS');
-                $days[$dayId]['active'] = $days[$dayId]['active'] ?? false;
-
-                $bimble->started_at_display = $bimble->started_at->format('H:i');
-                $bimble->ended_at_display = $bimble->ended_at->format('H:i');
-                $bimble->active = $days[$dayId]['bimbles'][$bimble->id]->active ?? false;
-
-                $days[$dayId]['bimbles'][$bimble->id] = $bimble->toArray();
-
-//                if ($bimble->active) {
-//                    $filteredBimbles[] = $bimble;
-//                } elseif ($days[$dayId]['active'] && ) // TODO: If no siblings active, all bimbles in day should be active
-            });
-
-            if ($bimbles->isEmpty()) {
-                continue;
-            }
-
-            $month = $this->months[$monthId] ?? [];
-            $this->months[$monthId]['id'] = $monthId;
-            $this->months[$monthId]['text'] = $monthDate->monthName;
-            $this->months[$monthId]['number'] = $monthDate->month;
-            $this->months[$monthId]['days'] = $days;
-            $this->months[$monthId]['active'] = $month['active'] ?? false;
+        if (empty($this->navTree)) {
+            $this->buildTree($bimbles);
         }
 
-        $this->dispatch('bimbles-changed', bimbles: $filteredBimbles);
+        $this->dispatch('bimbles-changed', bimbles: $this->filterBimbles());
 
         return view('livewire.layout.sidenav-auth');
+    }
+
+    protected function buildTree($bimbles)
+    {
+        $bimbles->each(function (Bimble $bimble) {
+            if (!array_key_exists($bimble->started_at->year, $this->navTree)) {
+                $this->navTree[$bimble->started_at->year] = [
+                    'id' => $bimble->started_at->year,
+                    'active' => false,
+                ];
+            }
+
+            if (!array_key_exists('months', $this->navTree[$bimble->started_at->year])) {
+                $this->navTree[$bimble->started_at->year]['months'] = [];
+            }
+
+            if (!array_key_exists($bimble->started_at->month, $this->navTree[$bimble->started_at->year]['months'])) {
+                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month] = [
+                    'id' => $bimble->started_at->month,
+                    'text' => $bimble->started_at->monthName,
+                    'active' => false,
+                ];
+            }
+
+            if (!array_key_exists('days', $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month])) {
+                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'] = [];
+            }
+
+            if (!array_key_exists($bimble->started_at->day, $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'])) {
+                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day] = [
+                    'id' => $bimble->started_at->day,
+                    'text' => $bimble->started_at->format('jS'),
+                    'active' => false,
+                ];
+            }
+
+            if (!array_key_exists('bimbles', $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day])) {
+                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'] = [];
+            }
+
+            if (!array_key_exists($bimble->id, $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'])) {
+                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'][$bimble->id] = [
+                    'id' => $bimble->id,
+                    'text' => $bimble->started_at->format('H:i') . ' - ' . $bimble->ended_at->format('H:i'),
+                    'active' => false,
+                ];
+            }
+        });
+    }
+
+    protected function filterBimbles(): array
+    {
+        $filteredBimbles = [];
+        $bimblesActive = false;
+
+        foreach($this->navTree as $year) {
+
+            foreach ($year['months'] as $month) {
+                $thisMonthHasActiveBimbles = false;
+                $thisMonthHasActiveDays = false;
+
+                foreach ($month['days'] as $day) {
+                    $thisDayHasActiveBimbles = false;
+                    $bimbleIdsForDay = [];
+
+                    foreach ($day['bimbles'] as $bimble) {
+                        $bimbleIdsForDay[] = $bimble['id'];
+                        $bimbleIdsForMonth[] = $bimble['id'];
+                        if ($bimble['active']) {
+                            $filteredBimbles[] = Bimble::find($bimble['id']);
+                            $bimblesActive = true;
+                            $thisDayHasActiveBimbles = true;
+                            $thisMonthHasActiveBimbles = true;
+                        }
+                    }
+
+                    // TODO: Need to know if future bimbles are active
+                    if (!$thisDayHasActiveBimbles && $day['active'] && !$bimblesActive) {
+                        $thisMonthHasActiveDays = true;
+                        $filteredBimbles = array_merge($filteredBimbles, Bimble::whereIn('id', $bimbleIdsForDay)->get()->toArray());
+                    }
+                }
+
+                if (!$thisMonthHasActiveBimbles && !$thisMonthHasActiveDays && !$bimblesActive) {
+                    $filteredBimbles = array_merge($filteredBimbles, Bimble::whereIn('id', $bimbleIdsForMonth)->get()->toArray());
+                    foreach ($day['bimbles'] as $bimble) {
+                        $bimble['active'] = true;
+                    }
+                }
+            }
+        }
+        return $filteredBimbles;
     }
 }
