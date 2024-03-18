@@ -71,14 +71,12 @@
             layer.options.opacity = 0;
             layer.setStyle(layer.options);
         });
-
-
-
-        // show any hidden bimbles that shouldn't be hidden
-
-
-
     });
+
+    Echo.private(`pings`)
+        .listen('PingSaving', (e) => {
+            console.log(e);
+        });
 
 </script>
 @endscript
