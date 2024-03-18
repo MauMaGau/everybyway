@@ -9,7 +9,6 @@ use Livewire\Component;
 
 class SidenavAuth extends Component
 {
-    //    public Collection $bimbles;
     public array $navTree = [];
     public array $debug;
 
@@ -29,6 +28,7 @@ class SidenavAuth extends Component
     protected function buildTree($bimbles)
     {
         $bimbles->each(function (Bimble $bimble) {
+            // Years
             if (!array_key_exists($bimble->started_at->year, $this->navTree)) {
                 $this->navTree[$bimble->started_at->year] = [
                     'id' => $bimble->started_at->year,
@@ -36,27 +36,36 @@ class SidenavAuth extends Component
                 ];
             }
 
+            // Months intitiation
             if (!array_key_exists('months', $this->navTree[$bimble->started_at->year])) {
                 $this->navTree[$bimble->started_at->year]['months'] = [];
             }
 
+            // Months
             if (!array_key_exists($bimble->started_at->month, $this->navTree[$bimble->started_at->year]['months'])) {
                 $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month] = [
                     'id' => $bimble->started_at->month,
                     'text' => $bimble->started_at->monthName,
                     'active' => false,
+                    'hasActiveBimbles' => false,
+                    'hasActiveDays' => false,
+                    'bimbleIds' => [],
                 ];
             }
 
+            // Days initiation
             if (!array_key_exists('days', $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month])) {
                 $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'] = [];
             }
 
+            // Days
             if (!array_key_exists($bimble->started_at->day, $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'])) {
                 $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day] = [
                     'id' => $bimble->started_at->day,
                     'text' => $bimble->started_at->format('jS'),
                     'active' => false,
+                    'hasActiveBimbles' => false,
+                    'bimbleIds' => false,
                 ];
             }
 
@@ -77,44 +86,48 @@ class SidenavAuth extends Component
     protected function filterBimbles(): array
     {
         $filteredBimbles = [];
-        $bimblesActive = false;
 
-        foreach($this->navTree as $year) {
-
-            foreach ($year['months'] as $month) {
-                $thisMonthHasActiveBimbles = false;
-                $thisMonthHasActiveDays = false;
-
-                foreach ($month['days'] as $day) {
-                    $thisDayHasActiveBimbles = false;
-                    $bimbleIdsForDay = [];
-
+        // Set bimbleIds and hasActiveBimbles properties in navTree
+        foreach($this->navTree as $yearKey => $year) {
+            foreach ($year['months'] as $monthKey => $month) {
+                $this->navTree[$yearKey]['months'][$monthKey]['hasActiveBimbles'] = false;
+                $this->navTree[$yearKey]['months'][$monthKey]['hasActiveDays'] = true;
+                foreach ($month['days'] as $dayKey => $day) {
+                    $this->navTree[$yearKey]['months'][$monthKey]['days'][$dayKey]['hasActiveBimbles'] = false;
                     foreach ($day['bimbles'] as $bimble) {
-                        $bimbleIdsForDay[] = $bimble['id'];
-                        $bimbleIdsForMonth[] = $bimble['id'];
-                        if ($bimble['active']) {
+                        $this->navTree[$yearKey]['months'][$monthKey]['days'][$dayKey]['bimbleIds'][$bimble['id']] = $bimble['id'];
+                        $this->navTree[$yearKey]['months'][$monthKey]['bimbleIds'][$bimble['id']] = $bimble['id'];
+                        $month['bimbleIds'][] = $bimble['id'];
+
+                        if ($bimble['active'] && $day['active'] && $month['active'] && $year['active']) {
                             $filteredBimbles[] = Bimble::find($bimble['id']);
-                            $bimblesActive = true;
-                            $thisDayHasActiveBimbles = true;
-                            $thisMonthHasActiveBimbles = true;
+                            $this->navTree[$yearKey]['months'][$monthKey]['days'][$dayKey]['hasActiveBimbles'] = true;
+                            $this->navTree[$yearKey]['months'][$monthKey]['hasActiveDays'] = false;
+                            $this->navTree[$yearKey]['months'][$monthKey]['hasActiveBimbles'] = true;
                         }
                     }
+                }
+            }
+        }
 
-                    // TODO: Need to know if future bimbles are active
-                    if (!$thisDayHasActiveBimbles && $day['active'] && !$bimblesActive) {
-                        $thisMonthHasActiveDays = true;
-                        $filteredBimbles = array_merge($filteredBimbles, Bimble::whereIn('id', $bimbleIdsForDay)->get()->toArray());
+        // Add correct bimbles to map based on previously set navTree properties
+        foreach($this->navTree as $year) {
+            foreach ($year['months'] as $month) {
+                foreach ($month['days'] as $day) {
+                    if ($day['hasActiveBimbles'] === false && $day['active']) {
+                        $month['hasActiveBimbles'] = true;
+                        $filteredBimbles = array_merge($filteredBimbles, Bimble::whereIn('id', $day['bimbleIds'])->get()->toArray());
                     }
                 }
-
-                if (!$thisMonthHasActiveBimbles && !$thisMonthHasActiveDays && !$bimblesActive) {
-                    $filteredBimbles = array_merge($filteredBimbles, Bimble::whereIn('id', $bimbleIdsForMonth)->get()->toArray());
+                if ($month['hasActiveBimbles'] === false && $month['active'] && $month['hasActiveDays']) {
+                    $filteredBimbles = array_merge($filteredBimbles, Bimble::whereIn('id', $month['bimbleIds'])->get()->toArray());
                     foreach ($day['bimbles'] as $bimble) {
                         $bimble['active'] = true;
                     }
                 }
             }
         }
+
         return $filteredBimbles;
     }
 }
