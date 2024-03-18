@@ -43,7 +43,7 @@ class Ping extends Model
         'data',
     ];
 
-    protected $dispatchesEvents = ['saving' => PingSaving::class, 'creating' => PingCreating::class];
+    protected $dispatchesEvents = ['saving' => PingSaving::class];
 
     public function geo(): Attribute
     {

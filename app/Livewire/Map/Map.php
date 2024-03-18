@@ -12,12 +12,6 @@ class Map extends Component
 {
     public Collection $bimbles;
 
-    #[On('new-ping')]
-    public function newPing()
-    {
-//        $this->bimbles->find()
-    }
-
     public function render()
     {
         if (Auth::guest()) {

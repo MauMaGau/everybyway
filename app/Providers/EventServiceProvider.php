@@ -25,13 +25,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        PingSaving::class => [
-            AddCapturedAtToPing::class,
-            AddPingToBimble::class,
-            AddHomeAreaToPing::class,
-            AddDistanceToPing::class,
-            UpdateMapWithPing::class,
-        ],
+//        PingSaving::class => [
+////            AddCapturedAtToPing::class,
+////            AddPingToBimble::class,
+////            AddHomeAreaToPing::class,
+////            AddDistanceToPing::class,
+////            UpdateMapWithPing::class,
+//        ],
     ];
 
     /**
