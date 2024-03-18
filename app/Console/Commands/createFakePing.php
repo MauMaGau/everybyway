@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\PingCreated;
 use App\Models\Ping;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -13,20 +14,21 @@ class createFakePing extends Command
      *
      * @var string
      */
-    protected $signature = 'app:create-fake-ping';
+    protected $signature = 'app:create-fake-ping-on-local';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'For test env only!!1';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        Ping::factory()->create(['user_id' => User::firstOrFail()->id]);
+//        Ping::factory()->create(['user_id' => User::firstOrFail()->id]);
+        PingCreated::dispatch();
     }
 }

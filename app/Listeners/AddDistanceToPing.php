@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\DTOs\Geo;
+use App\Events\PingCreating;
 use App\Helpers\GeoHelper;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Response;
@@ -21,7 +21,7 @@ class AddDistanceToPing
     /**
      * Handle the event.
      */
-    public function handle(object $event): void
+    public function handle(PingCreating $event): void
     {
         $newPing = $event->ping;
         $lastPing = $newPing->previousPing();

@@ -44,7 +44,6 @@
 
 
     Livewire.on('bimbles-changed', (data) => {
-        console.log(data);
         // Hide all layers, show any that we should
         let newVisibleLayers = new Map();
         let newHiddenLayers = new Map(allLayers);
@@ -73,8 +72,8 @@
         });
     });
 
-    Echo.private(`pings`)
-        .listen('PingSaving', (e) => {
+    Echo.channel(`pings1`)
+        .listen('.ping.created', (e) => {
             console.log(e);
         });
 

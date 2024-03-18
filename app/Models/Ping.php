@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\DTOs\Geo;
+use App\Events\PingCreated;
 use App\Events\PingCreating;
-use App\Events\PingSaving;
 use App\Helpers\GeoHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -43,7 +43,7 @@ class Ping extends Model
         'data',
     ];
 
-    protected $dispatchesEvents = ['saving' => PingSaving::class];
+    protected $dispatchesEvents = ['creating' => PingCreating::class, 'created' => PingCreated::class];
 
     public function geo(): Attribute
     {
