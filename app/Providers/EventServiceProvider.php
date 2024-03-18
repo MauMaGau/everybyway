@@ -24,7 +24,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        PingCreating::class => [
+        PingSaving::class => [
             AddCapturedAtToPing::class,
             AddPingToBimble::class,
             AddHomeAreaToPing::class,
