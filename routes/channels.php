@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Broadcast;
 //    return (int) $user->id === (int) $id;
 //});
 
-Broadcast::channel('pings1', function ($user) {
+Broadcast::channel('pings', function ($user) {
     //    return (int) $user->id === (int) $id;
     return true;
 });

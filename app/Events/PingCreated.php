@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Ping;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -14,11 +15,14 @@ class PingCreated implements ShouldBroadcast
 {
     use Dispatchable, SerializesModels;
 
+    public Ping $ping;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(Ping $ping)
     {
+        $this->ping = $ping;
     }
 
     /**
@@ -29,7 +33,7 @@ class PingCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('pings1'),
+            new Channel('pings'),
         ];
     }
 
