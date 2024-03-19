@@ -13,7 +13,7 @@ So I'd like to look back and see where I've been on my bikes.
 
 But not in my car. Yawn.
 
-It might also be nice to have GPS trackers in on my bikes, for security.
+It might also be nice to have GPS trackers on my bikes, for security.
 
 Oh, and my partner worries about me, so if they can see I'm still moving that'd be good too.
 

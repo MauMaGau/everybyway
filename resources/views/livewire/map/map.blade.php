@@ -72,9 +72,15 @@
         });
     });
 
-    Echo.channel(`pings1`)
+    Echo.channel(`pings`)
         .listen('.ping.created', (e) => {
             console.log(e);
+            let ping = e.ping;
+            // allLayers[ping.bimble_id]
+            // Add ping to line in bimble's layer (or redraw whole line)
+            // Ensure line is updated in bimbleLayerGroup
+            // And added to map
+            // And layer has correct opacity (hidden or shown)
         });
 
 </script>

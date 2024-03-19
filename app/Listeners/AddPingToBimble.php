@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\PingCreating;
-use App\Events\PingSaving;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
