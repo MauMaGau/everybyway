@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\PingCreating;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -19,7 +20,7 @@ class AddCapturedAtToPing
     /**
      * Handle the event.
      */
-    public function handle(object $event): void
+    public function handle(PingCreating $event): void
     {
         if ($event->ping->captured_at) {
             return;
