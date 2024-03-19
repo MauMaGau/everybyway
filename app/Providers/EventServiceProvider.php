@@ -8,6 +8,7 @@ use App\Listeners\AddDistanceToPing;
 use App\Listeners\AddHomeAreaToPing;
 use App\Listeners\AddPingToBimble;
 use App\Listeners\AddCapturedAtToPing;
+use App\Listeners\UpdateMapWithPing;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

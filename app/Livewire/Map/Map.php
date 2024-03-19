@@ -5,6 +5,7 @@ namespace App\Livewire\Map;
 use App\Models\Bimble;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Map extends Component

@@ -1,13 +1,8 @@
 <x-app-layout>
-    @if (auth()->guest())
-        <livewire:layout.guest-navigation/>
+    @if (auth()->check())
+        <livewire:layout.sidenav-auth/>
     @else
-        <livewire:layout.navigation/>
+        <livewire:layout.sidenav-guest/>
     @endif
-    <div class="flex flex-row h-full">
-        @if (auth()->check())
-            <livewire:layout.sidenav/>
-        @endif
-        <livewire:map.map/>
-    </div>
+    <livewire:map.map/>
 </x-app-layout>

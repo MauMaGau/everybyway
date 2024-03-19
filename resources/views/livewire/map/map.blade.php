@@ -49,7 +49,6 @@
         let newHiddenLayers = new Map(allLayers);
 
         allLayers.forEach(function(layerId, bimbleId) {
-            console.log(bimbleId, layerId);
             Object.values(data.bimbles).forEach((bimble) => {
                 if (bimble.id === bimbleId) {
                     newVisibleLayers.set(bimbleId, layerId);
@@ -62,25 +61,21 @@
         hiddenLayers = new Map(newHiddenLayers);
 
         visibleLayers.values().forEach((layerId) => {
-            console.log(layerId, 'show');
             let layer = bimbleLayerGroup.getLayer(layerId);
             layer.options.opacity = 1;
             layer.setStyle(layer.options);
         });
         hiddenLayers.values().forEach((layerId) => {
-            console.log(layerId, 'hide');
             let layer = bimbleLayerGroup.getLayer(layerId);
             layer.options.opacity = 0;
             layer.setStyle(layer.options);
         });
-
-
-
-        // show any hidden bimbles that shouldn't be hidden
-
-
-
     });
+
+    Echo.channel(`pings1`)
+        .listen('.ping.created', (e) => {
+            console.log(e);
+        });
 
 </script>
 @endscript
