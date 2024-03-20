@@ -26,6 +26,7 @@
     // Ensure layer has id of bimble, so we can toggle visibility later
     @js($bimbles).forEach((bimble) => {
         // Create a line for the bimble
+        console.log(bimble);
         let line = [];
         bimble.pings.forEach((ping) => {
             line.push([ping.lat, ping.lon]);
