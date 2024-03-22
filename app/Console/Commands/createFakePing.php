@@ -28,7 +28,7 @@ class createFakePing extends Command
      */
     public function handle()
     {
-//        Ping::factory()->create(['user_id' => User::firstOrFail()->id]);
-        PingCreated::dispatch();
+        $ping = Ping::factory()->create(['user_id' => User::firstOrFail()->id]);
+        PingCreated::dispatch($ping);
     }
 }

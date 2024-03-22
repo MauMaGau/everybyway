@@ -19,9 +19,9 @@ class PingTest extends TestCase
 
         Ping::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->post(route('api.ping', ['lat'=> 0, 'lon' => 0, 'timestamp' => Carbon::now()->timestamp]));
+        $response = $this->post(route('api.ping', ['lat'=> 0, 'lon' => 0, 'timestamp' => Carbon::now()->timestamp, 'acc' => 1]));
 
-        $response->assertStatus(200);
+        $response->assertStatus(202);
     }
 
     public function test_ping_post_missing_data(): void

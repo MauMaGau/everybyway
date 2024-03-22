@@ -28,6 +28,6 @@ class PingTest extends TestCase
         $user = User::factory()->create();
         $ping = Ping::factory()->create(['lat' => 1, 'lon' => 0, 'user_id' => $user->id]);
 
-//        $this->assertNull($ping->previousPing());
+        $this->assertNull($ping->previousPing());
     }
 }
