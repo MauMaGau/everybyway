@@ -28,10 +28,10 @@ class AddPingToBimble
             return;
         }
 
-        $timeIdle = $event->ping->captured_at->diffInMinutes($previousPing->captured_at);
+        $timeIdle = abs($previousPing->captured_at->diffInMinutes($event->ping->captured_at));
 
         // If the user has been idle for too long, start a new bimble
-        if (abs($timeIdle) > env('BIMBLE_TIMEOUT')) {
+        if ($timeIdle > env('BIMBLE_TIMEOUT', 15)) {
             $bimble = $event->ping->user->bimbles()->create(['started_at' => $event->ping->captured_at, 'ended_at' => $event->ping->captured_at]);
             $event->ping->bimble()->associate($bimble);
             return;

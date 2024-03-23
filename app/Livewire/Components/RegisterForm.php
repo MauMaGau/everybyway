@@ -61,7 +61,7 @@ class RegisterForm extends Component
 
         Auth::login($user);
 
-        $this->redirect('/', navigate: true);
+        $this->redirect('home', navigate: true);
     }
 
     public function render()

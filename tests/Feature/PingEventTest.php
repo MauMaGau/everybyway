@@ -42,7 +42,7 @@ class PingEventTest extends TestCase
         $this->assertNotNull($ping2->distance_from_last_ping);
     }
 
-    public function test_bimble_is_set(): void
+    public function test_bimble_is_set_on_ping_if_part_of_journey(): void
     {
         $user = User::factory()->create();
         $ping1 = Ping::factory()->create(['lat' => 0, 'lon' => 0, 'user_id' => $user->id]);
