@@ -6,3 +6,6 @@
 @import 'sidenav.pcss';
 @import 'map.pcss';
 
+#livewire-error iframe {
+    background-color: white!important;
+}
