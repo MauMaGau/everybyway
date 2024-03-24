@@ -28,59 +28,93 @@ class MapFilterTime extends Component
         return view('livewire.components.map-filter-time');
     }
 
-    public function dayToggle(int $dayId, bool $active): void
+    public function dayToggle(string $dayId, bool $active): void
     {
+        $this->setTreeItem($dayId, 'day', ['active' => !$active]);
 
+        // show
+
+        $this->updateDay($dayId);
+        $this->updateMonth($dayId);
+        // If Active && !hasActiveBimbles: showBimbles, update Month, update Year
+        // If Active && hasActiveBimbles: update Month, update Year
+        // if !Active: update Month, update Year
     }
 
-    public function bimbleToggle(int $bimbleId, bool $active): void
+    public function bimbleToggle(array $bimbleData): void
     {
-        if ($active) {
-            $this->hideBimble($bimbleId);
+        if ($bimbleData['active']) {
+            $this->hideBimble($bimbleData['model_id']);
         } else {
-            $this->showBimble($bimbleId);
+            $this->showBimble($bimbleData['model_id']);
         }
 
-        $bimble = Bimble::findOrFail($bimbleId);
+        $bimble = Bimble::findOrFail($bimbleData['model_id']);
 
-        $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'][$bimble->id]['active'] = !$active;
+        $this->setTreeItem($bimbleData['id'], 'bimble', ['active' => !$bimbleData['active']]);
 
-        $this->updateDay($this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]);
+        $this->updateDay($this->makeTreeId($bimble->started_at->year, $bimble->started_at->month, $bimble->started_at->day));
 
-        $this->updateMonth($this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]);
+        $this->updateMonth($this->makeTreeId($bimble->started_at->year, $bimble->started_at->month));
 
         $this->dispatch('bimbles-changed', shownBimbles: $this->shownBimbles, hiddenBimbles: $this->hiddenBimbles);
     }
 
-    protected function updateDay(array &$day): void
+    protected function updateDay(string $dayId): void
     {
-        $day['hasActiveBimbles'] = $this->dayHasActiveBimbles($day);
+        $day = $this->getTreeItem($dayId, 'day');
 
-        if ($day['hasActiveBimbles']) {
+        $hasActiveBimbles = $this->dayHasActiveBimbles($day);
+
+        $this->setTreeItem($dayId, 'day', ['hasActiveBimbles' => $hasActiveBimbles]);
+
+        if ($hasActiveBimbles) {
             $this->hideInactiveBimbles($day['bimbles']);
         } else {
             $this->showBimbles($day['bimbles']);
         }
     }
 
-    protected function updateMonth(array &$month): void
+    protected function updateMonth(string $monthId): void
     {
-        $month['hasActiveBimbles'] = $this->monthHasActiveBimbles($month);
-        $month['hasActiveDays'] = $this->monthHasActiveDays($month);
+        $month = $this->getTreeItem($monthId, 'month');
 
-        if ($month['hasActiveBimbles'] || $month['hasActiveDays']) {
+        $hasActiveBimbles = $this->monthHasActiveBimbles($month);
+        $hasActiveDays = $this->monthHasActiveDays($month);
+
+        $this->setTreeItem($monthId, 'month', ['hasActiveBimbles' => $hasActiveBimbles]);
+        $this->setTreeItem($monthId, 'month', ['hasActiveDays' => $hasActiveDays]);
+
+        if ($hasActiveDays) {
             $this->hideInactiveDaysBimbles($month['days']);
+        } else {
+            $this->showDaysBimbles($month['days']);
+        }
+
+        foreach ($month['days'] as $day) {
+            if ($hasActiveBimbles) {
+                $this->hideInactiveBimbles($day['bimbles']);
+            } else {
+                $this->showBimbles($day['bimbles']);
+            }
+        }
+    }
+
+    protected function showDaysBimbles(array $days): void
+    {
+        foreach ($days as $day) {
+            $this->showBimbles($day['bimbles']);
         }
     }
 
     protected function showBimbles(array $bimbles): void
     {
         foreach ($bimbles as $bimble) {
-            $this->showBimble($bimble['id']);
+            $this->showBimble($bimble['model_id']);
         }
     }
 
-    protected function showBimble(int $bimbleId): void
+    protected function showBimble(string $bimbleId): void
     {
         foreach ($this->hiddenBimbles as $key => $value) {
             if ($bimbleId == $value) {
@@ -88,7 +122,7 @@ class MapFilterTime extends Component
             }
         }
         if (!in_array($bimbleId, $this->shownBimbles)) {
-            $this->shownBimbles[] = $bimbleId;
+            $this->shownBimbles[] = (int)$bimbleId;
         }
     }
 
@@ -105,7 +139,7 @@ class MapFilterTime extends Component
     {
         foreach ($bimbles as $bimble) {
             if (!$bimble['active']) {
-                $this->hideBimble($bimble['id']);
+                $this->hideBimble($bimble['model_id']);
             }
         }
     }
@@ -113,11 +147,11 @@ class MapFilterTime extends Component
     protected function hideBimbles(array $bimbles): void
     {
         foreach ($bimbles as $bimble) {
-            $this->hideBimble($bimble['id']);
+            $this->hideBimble($bimble['model_id']);
         }
     }
 
-    protected function hideBimble(int $bimbleId): void
+    protected function hideBimble(string $bimbleId): void
     {
         foreach ($this->shownBimbles as $key => $value) {
             if ($bimbleId == $value) {
@@ -125,7 +159,7 @@ class MapFilterTime extends Component
             }
         }
         if (!in_array($bimbleId, $this->hiddenBimbles)) {
-            $this->hiddenBimbles[] = $bimbleId;
+            $this->hiddenBimbles[] = (int)$bimbleId;
         }
     }
 
@@ -165,59 +199,152 @@ class MapFilterTime extends Component
     {
         $bimbles->each(function (Bimble $bimble) {
             // Years
-            if (!array_key_exists($bimble->started_at->year, $this->navTree)) {
-                $this->navTree[$bimble->started_at->year] = [
-                    'id' => $bimble->started_at->year,
+            $yearId = $this->makeTreeId($bimble->started_at->year);
+            if (!$this->checkTreeItemExists($yearId, 'year')) {
+                $this->setTreeItem($yearId, 'year', [
+                    'id' => $yearId,
                     'active' => false,
                     'hasActiveMonths' => false,
                     'hasActiveDays' => false,
                     'hasActiveBimbles' => false,
-                ];
-            }
-
-            // Months initiation
-            if (!array_key_exists('months', $this->navTree[$bimble->started_at->year])) {
-                $this->navTree[$bimble->started_at->year]['months'] = [];
+                    'months' => [],
+                ]);
             }
 
             // Months
-            if (!array_key_exists($bimble->started_at->month, $this->navTree[$bimble->started_at->year]['months'])) {
-                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month] = [
-                    'id' => $bimble->started_at->month,
+            $monthId = $this->makeTreeId($bimble->started_at->year, $bimble->started_at->month);
+            if (!$this->checkTreeItemExists($monthId, 'month')) {
+                $this->setTreeItem($monthId, 'month', [
+                    'id' => $monthId,
                     'text' => $bimble->started_at->monthName,
                     'active' => false,
                     'hasActiveDays' => false,
                     'hasActiveBimbles' => false,
-                ];
+                    'days' => [],
+                ]);
             }
 
             // Days initiation
-            if (!array_key_exists('days', $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month])) {
-                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'] = [];
-            }
-
-            // Days
-            if (!array_key_exists($bimble->started_at->day, $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'])) {
-                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day] = [
-                    'id' => $bimble->started_at->day,
+            $dayId = $this->makeTreeId($bimble->started_at->year, $bimble->started_at->month, $bimble->started_at->day);
+            if (!$this->checkTreeItemExists($dayId, 'day')) {
+                $this->setTreeItem($dayId, 'day', [
+                    'id' => $dayId,
                     'text' => $bimble->started_at->format('jS'),
                     'active' => false,
                     'hasActiveBimbles' => false,
-                ];
+                    'bimbles' => []
+                ]);
             }
 
-            if (!array_key_exists('bimbles', $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day])) {
-                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'] = [];
-            }
-
-            if (!array_key_exists($bimble->id, $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'])) {
-                $this->navTree[$bimble->started_at->year]['months'][$bimble->started_at->month]['days'][$bimble->started_at->day]['bimbles'][$bimble->id] = [
-                    'id' => $bimble->id,
+            $bimbleId = $this->makeTreeId($bimble->started_at->year, $bimble->started_at->month, $bimble->started_at->day, $bimble->id);
+            if (!$this->checkTreeItemExists($bimbleId, 'bimble')) {
+                $this->setTreeItem($bimbleId, 'bimble', [
+                    'id' => $bimbleId,
+                    'model_id' => $bimble->id,
                     'text' => $bimble->started_at->format('H:i') . ' - ' . $bimble->ended_at->format('H:i'),
                     'active' => false,
-                ];
+                ]);
             }
         });
+    }
+
+    protected function makeTreeId(int $year, int $month = null, int $day = null, int $bimbleId = null): string
+    {
+        $parts = [$year];
+        if ($month) {
+            $parts[] = $month;
+        }
+        if ($day) {
+            $parts[] = $day;
+        }
+        if ($bimbleId) {
+            $parts[] = $bimbleId;
+        }
+
+        return implode('|', $parts);
+    }
+
+    protected function checkTreeItemExists(string $itemId, string $itemType): bool
+    {
+        $itemIdParts = explode('|', $itemId);
+
+        if ($itemType === 'year') {
+            return isset($this->navTree[$itemIdParts[0]]);
+        }
+
+        if ($itemType === 'month') {
+            return isset($this->navTree[$itemIdParts[0]]['months'][$itemIdParts[1]]);
+        }
+
+        if ($itemType === 'day') {
+            return isset($this->navTree[$itemIdParts[0]]['months'][$itemIdParts[1]]['days'][$itemIdParts[2]]);
+        }
+
+        if ($itemType === 'bimble') {
+            return isset($this->navTree[$itemIdParts[0]]['months'][$itemIdParts[1]]['days'][$itemIdParts[2]]['bimbles'][$itemIdParts[3]]);
+        }
+
+        return false;
+    }
+
+    protected function setTreeItem(string $itemId, string $itemType, array $data): void
+    {
+        $itemIdParts = explode('|', $itemId);
+
+        if ($itemType === 'year') {
+            foreach ($data as $key => $value) {
+                $this->navTree[$itemIdParts[0]][$key] = $value;
+            }
+        }
+
+        if ($itemType === 'month') {
+            foreach ($data as $key => $value) {
+                $this->navTree[$itemIdParts[0]]['months'][$itemIdParts[1]][$key] = $value;
+            }
+        }
+
+        if ($itemType === 'day') {
+            foreach ($data as $key => $value) {
+                $this->navTree[$itemIdParts[0]]['months'][$itemIdParts[1]]['days'][$itemIdParts[2]][$key] = $value;
+            }
+        }
+
+        if ($itemType === 'bimble') {
+            foreach ($data as $key => $value) {
+                $this->navTree[$itemIdParts[0]]['months'][$itemIdParts[1]]['days'][$itemIdParts[2]]['bimbles'][$itemIdParts[3]][$key] = $value;
+            }
+        }
+    }
+
+    protected function getTreeItem(string $itemId, string $itemType): ?array
+    {
+        $arr = $this->splitItemId($itemId);
+
+        if ($itemType === 'year') {
+            return $this->navTree[$arr['year']];
+        }
+
+        if ($itemType === 'month') {
+            return $this->navTree[$arr['year']]['months'][$arr['month']];
+        }
+
+        if ($itemType === 'day') {
+            return $this->navTree[$arr['year']]['months'][$arr['month']]['days'][$arr['day']];
+        }
+
+        if ($itemType === 'bimble') {
+            return $this->navTree[$arr['year']]['months'][$arr['month']]['days'][$arr['day']]['bimbles'][$arr['bimble']];
+        }
+
+        return null;
+    }
+
+    protected function splitItemId(string $itemId): array
+    {
+        $itemIdParts = explode('|', $itemId);
+        $keys = array_slice(['year', 'month', 'day', 'bimble'], -0, count($itemIdParts));
+
+        return array_combine($keys, $itemIdParts);
     }
 
     //    protected function filterBimbles(): array

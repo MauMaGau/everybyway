@@ -32,7 +32,7 @@
                                     x-for="day in month.days"
                                     wire:key="day.id">
                                     <li>
-                                        <a x-on:click="day.active = !day.active">
+                                        <a wire:click="dayToggle(day.id, day.active)">
                                             <input type="checkbox" x-show="day.active && !day.hasActiveBimbles" checked/>
                                             <span x-text="day.text"></span>
                                             <small x-text="day.hasActiveBimbles"></small>
@@ -45,7 +45,7 @@
                                                 x-for="bimble in day.bimbles"
                                                 wire:key="bimble.id">
                                                 <li>
-                                                    <a wire:click="bimbleToggle(bimble.id, bimble.active)">
+                                                    <a wire:click="bimbleToggle(bimble)">
                                                         <input type="checkbox" x-show="bimble.active" checked/>
                                                         <span x-text="bimble.text"></span>
                                                     </a>
