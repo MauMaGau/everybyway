@@ -19,9 +19,11 @@
                         wire:key="month.id"
                     >
                         <li>
-                            <a
-                                x-on:click="month.active = !month.active"
-                                x-text="month.text">
+                            <a x-on:click="month.active = !month.active">
+                                <span x-text="month.text"></span>
+                                <small x-text="month.hasActiveDays"></small>
+                                <small x-text="month.hasActiveBimbles"></small>
+                                <small x-text="month.active"></small>
                             </a>
                             <ul
                                 x-show="month.active"
@@ -33,8 +35,8 @@
                                         <a x-on:click="day.active = !day.active">
                                             <input type="checkbox" x-show="day.active && !day.hasActiveBimbles" checked/>
                                             <span x-text="day.text"></span>
-                                            <span x-text="day.hasActiveBimbles"></span>
-                                            <span x-text="day.active"></span>
+                                            <small x-text="day.hasActiveBimbles"></small>
+                                            <small x-text="day.active"></small>
                                         </a>
                                         <ul
                                             x-show="day.active"
@@ -43,7 +45,7 @@
                                                 x-for="bimble in day.bimbles"
                                                 wire:key="bimble.id">
                                                 <li>
-                                                    <a x-on:click="bimble.active = !bimble.active">
+                                                    <a wire:click="bimbleToggle(bimble.id, bimble.active)">
                                                         <input type="checkbox" x-show="bimble.active" checked/>
                                                         <span x-text="bimble.text"></span>
                                                     </a>

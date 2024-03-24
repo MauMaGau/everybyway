@@ -45,31 +45,43 @@
 
     Livewire.on('bimbles-changed', (data) => {
         // Hide all layers, show any that we should
-        let newVisibleLayers = new Map();
-        let newHiddenLayers = new Map(allLayers);
-
-        allLayers.forEach(function(layerId, bimbleId) {
-            Object.values(data.bimbles).forEach((bimble) => {
-                if (bimble.id === bimbleId) {
-                    newVisibleLayers.set(bimbleId, layerId);
-                    newHiddenLayers.delete(bimbleId);
-                }
-            });
-        });
-
-        visibleLayers = new Map(newVisibleLayers);
-        hiddenLayers = new Map(newHiddenLayers);
-
-        visibleLayers.values().forEach((layerId) => {
-            let layer = bimbleLayerGroup.getLayer(layerId);
+        // let newVisibleLayers = new Map();
+        // let newHiddenLayers = new Map();
+        console.log(data.shownBimbles, data.hiddenBimbles);
+        Object.values(data.shownBimbles).forEach(function (bimbleId) {
+            let layer = bimbleLayerGroup.getLayer(allLayers.get(bimbleId));
             layer.options.opacity = 1;
             layer.setStyle(layer.options);
         });
-        hiddenLayers.values().forEach((layerId) => {
-            let layer = bimbleLayerGroup.getLayer(layerId);
+
+        Object.values(data.hiddenBimbles).forEach(function (bimbleId) {
+            let layer = bimbleLayerGroup.getLayer(allLayers.get(bimbleId));
             layer.options.opacity = 0;
             layer.setStyle(layer.options);
         });
+
+        // allLayers.forEach(function(layerId, bimbleId) {
+        //     Object.values(data.bimbles).forEach((bimble) => {
+        //         if (bimble.id === bimbleId) {
+        //             newVisibleLayers.set(bimbleId, layerId);
+        //             newHiddenLayers.delete(bimbleId);
+        //         }
+        //     });
+        // });
+
+        // visibleLayers = new Map(newVisibleLayers);
+        // hiddenLayers = new Map(newHiddenLayers);
+        //
+        // visibleLayers.values().forEach((layerId) => {
+        //     let layer = bimbleLayerGroup.getLayer(layerId);
+        //     layer.options.opacity = 1;
+        //     layer.setStyle(layer.options);
+        // });
+        // hiddenLayers.values().forEach((layerId) => {
+        //     let layer = bimbleLayerGroup.getLayer(layerId);
+        //     layer.options.opacity = 0;
+        //     layer.setStyle(layer.options);
+        // });
     });
 
     Echo.channel(`pings`)
