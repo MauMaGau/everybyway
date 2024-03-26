@@ -1,17 +1,33 @@
 .sidenav {
-    width: 250px;
-    min-height: 100vh;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--gap-3);
+
+    @media only screen and (min-width: 992px) {
+        flex-direction: column;
+        justify-content: stretch;
+        width: 250px;
+        min-height: 100vh;
+    }
+
+    @media all and (max-width: 550px) {
+        flex-direction: column;
+    }
+
     padding: var(--gap-3);
     border-right: 1px solid var(--color-grey-4);
 
-    a {
-        text-decoration: none;
-        display: block;
-        user-select: none;
+    .footer {
+        margin-top: var(--gap-3);
     }
 
     ul {
-
+        a {
+            text-decoration: none;
+            display: block;
+            user-select: none;
+        }
     }
 
     ul ul {

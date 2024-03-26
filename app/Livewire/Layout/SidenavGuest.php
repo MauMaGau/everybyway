@@ -7,11 +7,19 @@ use Livewire\Component;
 
 class SidenavGuest extends Component
 {
-    public bool $showLogin = true;
+    public bool $showLogin = false;
+    public bool $showRegister = false;
 
-    public function toggleLogin(bool $showLogin):void
+    public function showLoginForm():void
     {
-        $this->showLogin = $showLogin;
+        $this->showLogin = true;
+        $this->showRegister = false;
+    }
+
+    public function showRegisterForm():void
+    {
+        $this->showRegister = true;
+        $this->showLogin = false;
     }
 
     public function render(): View
